@@ -17,6 +17,10 @@
   --ease:cubic-bezier(.16,1,.3,1);
 }
 html,body{background:var(--bg);color:var(--cloud);font-family:var(--fb);overflow-x:hidden;cursor:none}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .wi{opacity:1!important;transform:none!important}
+}
 #cur{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
 #cur2{position:fixed;width:28px;height:28px;border:1px solid rgba(34,197,94,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
 
@@ -360,6 +364,10 @@ h1.hh .wi{display:inline-block;opacity:0;will-change:transform,opacity;backface-
 .feat-icon{
   font-size:28px;margin-bottom:20px;display:block;
 }
+.feat-icon-svg{
+  width:28px;height:28px;margin-bottom:20px;display:block;
+  opacity:.6;
+}
 .feat-card-tag{
   font-family:var(--fm);font-size:9px;letter-spacing:.25em;
   color:var(--accent);text-transform:uppercase;margin-bottom:12px;opacity:.7;
@@ -492,7 +500,7 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
     <button onclick="toggleChat()" style="margin-left:auto;background:none;border:none;color:var(--slate);cursor:pointer;font-size:18px">×</button>
   </div>
   <div class="chat-msgs" id="chat-msgs">
-    <div class="chat-msg bot">¡Hola! 🌿 Soy el asistente de DistriSalud. ¿Querés ser mayorista, conocer nuestros productos o consultar sobre una entrega?</div>
+    <div class="chat-msg bot">¡Hola! Soy el asistente de DistriSalud. ¿Querés ser mayorista, conocer nuestros productos o consultar sobre una entrega?</div>
   </div>
   <div class="chat-input-row">
     <input class="chat-input" id="chat-input" placeholder="Escribí tu consulta..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -657,11 +665,11 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
     </div>
     <!-- Bento cards (6 cards, 3x2 grid) -->
     <div class="desc-bento">
-      <div class="dbc grad" id="dbc0"><div class="dbc-ico">🚐</div><div class="dbc-t">Entrega <em>directa</em> 24hs</div><div class="dbc-b">Sin intermediarios. De nuestra planta a tu local.</div><span class="dbc-tag">AMBA y GBA</span></div>
-      <div class="dbc dark" id="dbc1"><div class="dbc-ico">📋</div><div class="dbc-t">Sin mínimos</div><div class="dbc-b">Pedís lo que necesitás. Sin excepciones ni rellenos.</div></div>
+      <div class="dbc grad" id="dbc0"><div class="dbc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round" width="22" height="22"><rect x="1" y="7" width="13" height="10" rx="1.5"/><path d="M14 11h4l2 3v3h-6V11z"/><circle cx="6" cy="19" r="1.5"/><circle cx="19" cy="19" r="1.5"/></svg></div><div class="dbc-t">Entrega <em>directa</em> 24hs</div><div class="dbc-b">Sin intermediarios. De nuestra planta a tu local.</div><span class="dbc-tag">AMBA y GBA</span></div>
+      <div class="dbc dark" id="dbc1"><div class="dbc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round" width="22" height="22"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></div><div class="dbc-t">Sin mínimos</div><div class="dbc-b">Pedís lo que necesitás. Sin excepciones ni rellenos.</div></div>
       <div class="dbc grad" id="dbc2"><div class="dbc-ico">✓</div><div class="dbc-t">ANMAT</div><div class="dbc-b">Todos los productos certificados y trazables.</div></div>
-      <div class="dbc dark" id="dbc3"><div class="dbc-ico">💳</div><div class="dbc-t">Financiación</div><div class="dbc-b">Cuenta corriente y pago a 30 días disponible.</div></div>
-      <div class="dbc green" id="dbc4"><div class="dbc-ico">🌿</div><div class="dbc-t" style="color:#090909">Naturistas &amp; deportivos</div><div class="dbc-b" style="color:rgba(9,9,9,.65)">+200 productos naturales, orgánicos y certificados.</div></div>
+      <div class="dbc dark" id="dbc3"><div class="dbc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round" width="22" height="22"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="dbc-t">Financiación</div><div class="dbc-b">Cuenta corriente y pago a 30 días disponible.</div></div>
+      <div class="dbc green" id="dbc4"><div class="dbc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-2-8 2v7c0 6 8 10 8 10z"/><line x1="12" y1="12" x2="12" y2="22"/></svg></div><div class="dbc-t" style="color:#090909">Naturistas &amp; deportivos</div><div class="dbc-b" style="color:rgba(9,9,9,.65)">+200 productos naturales, orgánicos y certificados.</div></div>
       <div class="dbc dark" id="dbc5"><div style="font-family:var(--fm);font-size:9px;color:var(--slate);letter-spacing:.15em;margin-bottom:10px">CLIENTES ACTIVOS</div><div style="font-family:var(--fd);font-weight:300;font-size:56px;letter-spacing:-4px;line-height:1;color:var(--cloud)"><em>1.2k</em></div><div style="font-size:11px;color:var(--slate);margin-top:8px">Gimnasios · Dietéticas · Restaurantes</div></div>
     </div>
   </div>
@@ -794,32 +802,42 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
     </div>
     <div class="feat-grid">
       <div class="feat-card large">
-        <span class="feat-icon">🚛</span>
+        <svg class="feat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="1.2" stroke-linecap="round">
+        <rect x="1" y="7" width="14" height="10" rx="1.5"/><path d="M15 11h4l2 3v3h-6V11z"/><circle cx="6" cy="19" r="1.5"/><circle cx="19" cy="19" r="1.5"/>
+      </svg>
         <p class="feat-card-tag">Logística propia</p>
         <h3 class="feat-card-title">Entrega directa en 24hs,<br>sin tercerizar</h3>
         <p class="feat-card-body">Flota propia, choferes propios, tracking en tiempo real. Salimos de nuestro depósito directo a tu local — sin escalas, sin demoras.</p>
         <div class="feat-card-metric">24hs <span style="font-size:.4em;color:var(--slate)">AMBA</span></div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">📦</span>
+        <svg class="feat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="1.2" stroke-linecap="round">
+        <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/>
+      </svg>
         <p class="feat-card-tag">Sin burocracia</p>
         <h3 class="feat-card-title">Pedido mínimo: ninguno</h3>
         <p class="feat-card-body">Pedí lo que necesitás. Sin catálogos, sin agentes, sin límites de monto.</p>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">🌿</span>
+        <svg class="feat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="1.2" stroke-linecap="round">
+        <path d="M12 22s8-4 8-10V5l-8-2-8 2v7c0 6 8 10 8 10z"/>
+      </svg>
         <p class="feat-card-tag">Calidad certificada</p>
         <h3 class="feat-card-title">ANMAT y trazabilidad total</h3>
         <p class="feat-card-body">Todos los productos con habilitación ANMAT, registros sanitarios y cadena de frío controlada.</p>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">💳</span>
+        <svg class="feat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="1.2" stroke-linecap="round">
+        <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
         <p class="feat-card-tag">Financiación</p>
         <h3 class="feat-card-title">Pagá como más te convenga</h3>
         <p class="feat-card-body">Efectivo, transferencia, hasta 3 cuotas sin interés. Financiación personalizada para mayoristas frecuentes.</p>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">🥦</span>
+        <svg class="feat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="1.2" stroke-linecap="round">
+        <circle cx="8" cy="9" r="3"/><circle cx="15" cy="7" r="3.5"/><circle cx="12" cy="13" r="3"/><path d="M8 12v8m4-5v5m3-7v7" stroke-width="1.5"/>
+      </svg>
         <p class="feat-card-tag">Catálogo completo</p>
         <h3 class="feat-card-title">Naturistas y deportivos en un solo pedido</h3>
         <p class="feat-card-body">Orgánicos, suplementos, semillas, snacks saludables. +200 marcas nacionales e importadas.</p>
@@ -927,7 +945,7 @@ function toggleChat(){
   const badge=document.getElementById('avo-badge');
   if(badge) badge.classList.remove('show');
 }
-const responses=['¡Claro! Para ser mayorista podés escribirnos a ventas@distrisalud.ar 🌿','Tenemos más de 500 productos disponibles: proteínas, naturistas, suplementos deportivos y alimentos orgánicos.','Las entregas en AMBA y GBA son en 24hs. ¿Querés que te contactemos?','No manejamos mínimos de compra. Podés pedir desde 1 unidad. 🚐'];
+const responses=['¡Claro! Para ser mayorista podés escribirnos a ventas@distrisalud.ar','Tenemos más de 500 productos disponibles: proteínas, naturistas, suplementos deportivos y alimentos orgánicos.','Las entregas en AMBA y GBA son en 24hs. ¿Querés que te contactemos?','No manejamos mínimos de compra. Podés pedir desde 1 unidad.'];
 let rIdx=0;
 function sendChat(){
   const inp=document.getElementById('chat-input');
@@ -969,7 +987,10 @@ const G3D='M 60,400 L 1380,400';
 //   Tangente inicio = 0° (sigue Gen3) | Tangente fin = ~84° (casi recto abajo)
 // Recorrido del dibujo: sale derecho → arco subiendo → barre izq → baja al centro
 // Tangente inicio=0° (sigue Gen3) | Tangente fin≈85° (casi recto abajo)
-const G_DESC='M 1380,400 C 1430,400 1430,160 780,160 C 130,160 260,320 380,340 C 340,450 500,640 720,780';
+// Bezier verificado: sin off-screen, física fluida, sin "craziness"
+// Tangente inicio = 0° (sigue Gen3) | Tangente fin = 90° (baja recto)
+// x-range: 280–1440 (siempre en viewport)
+const G_DESC='M 1380,400 C 1440,400 1440,155 780,155 C 280,155 280,310 400,350 C 380,450 720,640 720,780';
 const cp1=mkp(G1D),cp2=mkp(G2D),cp3=mkp(G3D),cpDesc=mkp(G_DESC);
 const L1=cp1.getTotalLength(),L2=cp2.getTotalLength(),L3=cp3.getTotalLength();
 const L_DESC=cpDesc.getTotalLength();
