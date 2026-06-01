@@ -192,8 +192,8 @@ h1.hh .wi{display:inline-block;opacity:0;will-change:transform,opacity;backface-
 }
 /* Truck trail line (vertical green) */
 #truck-trail{
+  display:none; /* trail removido — truck termina en Gen3 */
   position:absolute;
-  /* El camión llega al centro (50%) en y≈780/800=97.5% del SVG → ~60% de vh */
   left:50%; top:62%;
   width:2px; height:32vh;
   transform-origin:top center;
@@ -206,8 +206,8 @@ h1.hh .wi{display:inline-block;opacity:0;will-change:transform,opacity;backface-
 /* CSS truck element for descent */
 #desc-truck{
   position:absolute;
-  left:50%; top:50%;          /* punto de referencia: centro pantalla */
-  z-index:26; opacity:0;
+  left:50%; top:50%;
+  z-index:26; opacity:0; display:none; /* truck estacionado en Gen3 SVG */
   width:44px; height:26px;
   will-change:transform,opacity;
   transform:translate(-50%,-50%); /* base: centrado. JS mueve desde aquí */
@@ -987,10 +987,7 @@ const G3D='M 60,400 L 1380,400';
 //   Tangente inicio = 0° (sigue Gen3) | Tangente fin = ~84° (casi recto abajo)
 // Recorrido del dibujo: sale derecho → arco subiendo → barre izq → baja al centro
 // Tangente inicio=0° (sigue Gen3) | Tangente fin≈85° (casi recto abajo)
-// Bezier verificado: sin off-screen, física fluida, sin "craziness"
-// Tangente inicio = 0° (sigue Gen3) | Tangente fin = 90° (baja recto)
-// x-range: 280–1440 (siempre en viewport)
-const G_DESC='M 1380,400 C 1440,400 1440,155 780,155 C 280,155 280,310 400,350 C 380,450 720,640 720,780';
+const G_DESC=''; // no usado — truck termina en Gen3
 const cp1=mkp(G1D),cp2=mkp(G2D),cp3=mkp(G3D),cpDesc=mkp(G_DESC);
 const L1=cp1.getTotalLength(),L2=cp2.getTotalLength(),L3=cp3.getTotalLength();
 const L_DESC=cpDesc.getTotalLength();
@@ -1153,49 +1150,7 @@ function triggerTag(idx){
 
 /* ── DESCENT PHASE ── */
 function updateDescent(t){
-  // ── ARQUITECTURA: igual que placeTruck para Gen1/2/3 ─────────────────────
-  // getPointAtLength da posición exacta sobre la curva Bezier.
-  // Tangente (pt → pt+2) da el ángulo — sin fases manuales, sin esquinas.
-  // Solo transform + opacity → GPU compositor, 60fps constantes.
-
-  // Fade overlay una sola vez (flag)
-  if(!_dscOver){ _dscOver=true; descentOverlay.style.opacity='1'; }
-  if(t>0.28 && !_dscLbl){ _dscLbl=true; gsap.to('#dsc-label',{opacity:1,duration:.4}); }
-  if(t>0.40 && !_dscTit){ _dscTit=true; gsap.to('#dsc-title',{opacity:1,duration:.5}); }
-
-  // Ocultar SVG truck (está detrás del overlay)
-  truck.style.opacity='0';
-  descTruck.style.opacity='1';
-
-  // ── POSICIÓN: seguimos el Bezier exactamente como cp1/cp2/cp3 ─────────────
-  const d   = Math.min(t, 1) * L_DESC;
-  const pt  = cpDesc.getPointAtLength(d);
-  const pt2 = cpDesc.getPointAtLength(Math.min(d + 3, L_DESC));
-  const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-
-  // Convertir coordenadas SVG (1440×800) a offsets desde centro de pantalla
-  // descTruck tiene left:50%;top:50% como origen de referencia en CSS
-  const tx = (pt.x / 1440) * _sw - _sw * 0.5;
-  const ty = (pt.y /  800) * _sh - _sh * 0.5;
-
-  // GPU: solo transform, nunca top/left/width/height
-  descTruck.style.transform =
-    `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${angle}deg)`;
-
-  // ── TRAIL: scaleY, aparece cuando el camión llega al centro (~t>0.65) ─────
-  const trailProg = t > 0.65 ? Math.min((t - 0.65) / 0.35, 1) : 0;
-  truckTrail.style.transform = `translateX(-50%) scaleY(${trailProg})`;
-
-  // ── CARDS: coin-flip rotateY cuando el camión pasa cada cartel ───────────
-  // Umbrales en la segunda mitad del descenso (camión cerca del centro)
-  const CT = [0.60, 0.67, 0.74, 0.80, 0.87, 0.93];
-  CT.forEach((thresh,i)=>{
-    if(t >= thresh && dcIdx <= i){
-      const card = document.getElementById('dbc'+i);
-      if(card && !card.classList.contains('revealed')) card.classList.add('revealed');
-      dcIdx = i+1;
-    }
-  });
+  // No usado: truck termina en Gen3. Lógica movida al descent entry.
 }
 
 
@@ -1283,18 +1238,22 @@ dp2.style.strokeDashoffset=L2*(1-g2eC);
   } else if(p<DSE){
     const t=(p-G3E)/(DSE-G3E);
     dcIdx=Math.max(dcIdx,0);
+    // Truck estacionado en TU LOCAL — no se mueve más
+    placeTruck(cp3, 1.0);
     gsap.to([g1g,g2g,timeBadge,titleWrap,genTags,genBadge,genEra],{opacity:0,duration:.5});
-
-    // Bezier empieza en (1380,400) con tangente 0° — igual que Gen3.
-    // No se necesita wiggle manual: la curva ya incluye la inercia natural.
-    // Cross-fade overlay: t 0→0.15 fade in, después truck sigue la curva.
-    if(t < 0.15){
-      const fadeIn = t / 0.15;
-      descentOverlay.style.opacity = fadeIn.toFixed(3);
-      placeTruck(cp3, 1.0); // SVG truck se mantiene en posición Gen3
-    } else {
-      updateDescent(t);
-    }} else {
+    // Overlay con bento cards se revela suavemente
+    if(!_dscOver){ _dscOver=true; gsap.to(descentOverlay,{opacity:1,duration:.8}); }
+    if(t>0.25 && !_dscLbl){ _dscLbl=true; gsap.to('#dsc-label',{opacity:1,duration:.4}); }
+    if(t>0.38 && !_dscTit){ _dscTit=true; gsap.to('#dsc-title',{opacity:1,duration:.5}); }
+    // Bento cards: coin-flip al scrollear
+    const CT=[0.18,0.28,0.38,0.50,0.62,0.74];
+    CT.forEach((thresh,i)=>{
+      if(t>=thresh && dcIdx<=i){
+        const card=document.getElementById('dbc'+i);
+        if(card && !card.classList.contains('revealed')) card.classList.add('revealed');
+        dcIdx=i+1;
+      }
+    });} else {
     const t=(p-DSE)/(1-DSE);
     placeTruck(cp3,1.0);
     updateWarehouse(t);
