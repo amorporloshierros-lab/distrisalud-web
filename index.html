@@ -180,24 +180,31 @@ h1.hh .wi{display:inline-block;opacity:0;will-change:transform,opacity}
 /* ══ DESCENT PHASE — Truck goes down through bento ══════ */
 #descent-overlay{
   position:absolute;inset:0;z-index:20;
+  will-change:opacity;
   opacity:0;pointer-events:none;
   display:flex;flex-direction:column;
   background:#090909;
 }
 /* Truck trail line (vertical green) */
 #truck-trail{
-  position:absolute;left:50%;top:0;
-  width:2px;height:0;
-  background:linear-gradient(to bottom,var(--accent),rgba(34,197,94,.2));
-  transform:translateX(-50%);z-index:25;
-  filter:drop-shadow(0 0 4px rgba(34,197,94,.5));
+  position:absolute;
+  left:50%; top:38%;          /* punto de inicio del descenso */
+  width:2px; height:55vh;     /* tamaño máximo fijo — animamos scaleY */
+  transform-origin:top center;
+  transform:translateX(-50%) scaleY(0); /* GPU: scaleY en lugar de height */
+  will-change:transform;
+  background:linear-gradient(to bottom,var(--accent),rgba(34,197,94,.15));
+  border-radius:2px;
+  z-index:25;
 }
 /* CSS truck element for descent */
 #desc-truck{
-  position:absolute;left:50%;top:24px;z-index:26;opacity:0;
-  transform:translate(-50%,-50%) rotate(90deg);
-  width:44px;height:26px;
-  transition:none;
+  position:absolute;
+  left:50%; top:50%;          /* punto de referencia: centro pantalla */
+  z-index:26; opacity:0;
+  width:44px; height:26px;
+  will-change:transform,opacity;
+  transform:translate(-50%,-50%); /* base: centrado. JS mueve desde aquí */
 }
 
 /* Bento cards in descent overlay */
@@ -787,6 +794,9 @@ let g1ni=-1,g2hub=false,g3end=false,g3badge=false;
 const CW=[{id:'cw0',f:.08},{id:'cw1',f:.18},{id:'cw2',f:.32},{id:'cw3',f:.42},{id:'cw4',f:.55}];
 const TF=[0.20,0.38,0.55,0.75];
 let cwIdx=0,tagIdx=0,curGen=-1;
+let _dscOver=false,_dscLbl=false,_dscTit=false;
+let _sw=window.innerWidth,_sh=window.innerHeight;
+window.addEventListener('resize',()=>{_sw=window.innerWidth;_sh=window.innerHeight;},{passive:true});
 
 // Descent cards (bento)
 const DCARDS=['dbc0','dbc1','dbc2','dbc3','dbc4','dbc5'];
@@ -834,7 +844,9 @@ function switchGen(g){
     gsap.set(g2curtain,{opacity:0});
     gsap.to(g3g,{opacity:1,duration:.01});
     gsap.set([descentOverlay,whScene],{opacity:0});
-    dcIdx=0; // reset card index al entrar gen3
+    dcIdx=0;
+    _dscOver=false; _dscLbl=false; _dscTit=false; // reset descent flags
+    truck.style.opacity='1'; // restaurar SVG truck
     genBadge.textContent='✅ GEN 3 — DistriSalud: 24hs directo a tu local';
     genEra.textContent='✅ Stock real · Sin mínimo · Entrega 24hs AMBA';
     titleWrap.innerHTML='<span class="cw" id="cw30">En cambio,</span><br><span class="cw" id="cw31">con DistriSalud</span><br><span class="cw" id="cw32">en 24hs te proveemos.</span>';
@@ -882,53 +894,99 @@ function triggerTag(idx){
 
 /* ── DESCENT PHASE ── */
 function updateDescent(t){
-  // Overlay visible desde t=0.22 (lo de antes es cross-dissolve del SVG)
-  if(t > 0.22) gsap.to(descentOverlay,{opacity:1,duration:.01});
-  if(t > 0.25) gsap.to('#dsc-label',{opacity:1,duration:.5});
-  if(t > 0.32) gsap.to('#dsc-title',{opacity:1,duration:.6});
+  // ── GPU-FIRST: solo transform y opacity, nunca top/height/width ──────
+  // Trayectoria en 4 fases, valores cacheados para no recalcular en cada frame
 
-  // ── Wiggle + giro: t 0→0.08 mueve izq, 0.08→0.18 gira 0°→90°
-  // El truck SVG horizontal está al final del cp3 (extremo derecho)
-  // Fase 0-0.08: empuja izq (translate X negativo)
-  // Fase 0.08-0.18: gira 0°→90° mientras centra X
-  // Fase 0.18+: baja recto a 90°
-  const screenH = window.innerHeight;
+  // Cache dimensiones (se leen una vez por evento de resize, no por frame)
+  const sw = _sw || window.innerWidth;
+  const sh = _sh || window.innerHeight;
 
-  // descTruck solo se muestra desde t=0.22 (antes lo maneja el SVG)
-  // Ocultar desc-truck durante fase cinematic del SVG
-  if(t < 0.22){
-    descTruck.style.opacity = '0';
-    return; // SVG truck handles this phase
-  }
+  // Opacidad del overlay — solo una vez con flags
+  if(t > 0.22 && !_dscOver){ _dscOver=true; descentOverlay.style.opacity='1'; }
+  if(t > 0.28 && !_dscLbl){  _dscLbl=true;  gsap.to('#dsc-label',{opacity:1,duration:.4}); }
+  if(t > 0.36 && !_dscTit){  _dscTit=true;  gsap.to('#dsc-title',{opacity:1,duration:.5}); }
+
+  // Ocultar truck SVG — fase cinemática termina
+  if(t >= 0.22) truck.style.opacity = '0';
+
+  if(t < 0.22){ descTruck.style.opacity='0'; return; }
   descTruck.style.opacity = '1';
 
-  // t normalizado a partir de 0.22
+  // Normalizar t al rango real de descenso [0.22 → 1]
   const dt = (t - 0.22) / 0.78;
-  let truckRot = 90; // ya girado, va derecho para abajo
-  let truckX = 0;
-  descTruck.style.transform = `translate(-50%, -50%) rotate(${truckRot}deg)`;
 
-  // Trail desde t=0.22
-  const trailT = Math.max(0, (t - 0.22) / 0.78);
-  truckTrail.style.height = Math.min(trailT * 108, 100) + '%';
+  // ── PUNTO DE ORIGEN: donde termina el camión del Gen3 en pantalla ─────
+  // SVG viewBox 1440×800. cp3 termina aprox en x=1380, y=400
+  // Offset desde el centro de pantalla (nuestro punto de referencia CSS):
+  const originX =  sw * 0.42;   // ~42% a la derecha del centro
+  const originY =  0;            // misma altura que el centro
 
-  // Bajada: dt=0→1 durante fase de descenso real
-  const descEase = dt < 0.12 ? dt*dt*7 : 0.1008 + (dt-0.12)*1.02;
-  const truckY = Math.min(descEase * screenH * 0.90, screenH - 64);
-  descTruck.style.top = truckY + 'px';
+  // ── 4 FASES — todo via transform, easing manual sin librerías ──────────
+  let tx, ty, rot;
 
-  // Coin-flip tarjetas
-  const cardThresholds = [0.28, 0.38, 0.48, 0.60, 0.72, 0.84];
-  cardThresholds.forEach((thresh, i) => {
-    if(t >= thresh && dcIdx <= i){
-      const card = document.getElementById('dbc' + i);
+  if(dt < 0.18){
+    // FASE 1: Frena y dobla a la IZQUIERDA (0→0.18)
+    // ease-out: arranca rápido, termina suave
+    const p = dt / 0.18;
+    const e = 1 - Math.pow(1-p, 2);
+    tx  = originX - e * 55;     // nudge izq 55px
+    ty  = originY;
+    rot = 0;                    // sigue apuntando a la derecha
+
+  } else if(dt < 0.44){
+    // FASE 2: Se dirige al centro (0.18→0.44)
+    // ease-in-out suave
+    const p = (dt-0.18)/0.26;
+    const e = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+    tx  = (originX-55)*(1-e);   // originX-55 → 0 (centro)
+    ty  = sh * 0.04 * e;        // leve drift hacia abajo
+    rot = e * 42;               // empieza a girar anticipando la curva
+
+  } else if(dt < 0.60){
+    // FASE 3: Dobla a la izquierda = giro completo hacia abajo (0.44→0.60)
+    // ease-out: el giro termina suavemente
+    const p = (dt-0.44)/0.16;
+    const e = 1 - Math.pow(1-p, 2);
+    tx  = 0;                    // ya centrado
+    ty  = sh * 0.04;
+    rot = 42 + e * 48;          // 42° → 90° (trompa hacia abajo)
+
+  } else {
+    // FASE 4: Desciende recto — trompa abajo (0.60→1.00)
+    // ease-in al inicio, lineal en el medio, ease-out al llegar al depósito
+    const p = (dt-0.60)/0.40;
+    const e = p < 0.12
+      ? p*p*6.94                                // ease-in arranque
+      : p > 0.88
+        ? 1-(Math.pow(2-2*p,2)/2)              // ease-out llegada
+        : 0.1 + (p-0.12)*0.878;               // lineal medio
+    tx  = 0;
+    ty  = sh*0.04 + e * (sh * 0.80);           // baja hasta 84% de pantalla
+    rot = 90;
+  }
+
+  // ── APLICAR: solo transform (GPU compositor, sin layout/paint) ─────────
+  descTruck.style.transform =
+    `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${rot}deg)`;
+
+  // ── TRAIL: scaleY en lugar de height (GPU, sin layout) ─────────────────
+  const trailProgress = dt > 0.60 ? Math.min((dt-0.60)/0.40, 1) : 0;
+  truckTrail.style.transform =
+    `translateX(-50%) scaleY(${trailProgress})`;
+
+  // ── CARDS: coin-flip rotateY cuando el camión las pasa ─────────────────
+  // Umbrales mapeados a la fase 4 (dt 0.60→1.00)
+  const CT = [0.63, 0.70, 0.77, 0.83, 0.89, 0.95];
+  CT.forEach((thresh,i)=>{
+    if(t>=thresh && dcIdx<=i){
+      const card=document.getElementById('dbc'+i);
       if(card && !card.classList.contains('revealed')) card.classList.add('revealed');
-      dcIdx = i + 1;
+      dcIdx=i+1;
     }
   });
 }
 
-/* ── WAREHOUSE PHASE ── */
+
 function updateWarehouse(t){
   gsap.to(descentOverlay,{opacity:0,duration:.3});
   gsap.to(whScene,{opacity:1,duration:.01});
