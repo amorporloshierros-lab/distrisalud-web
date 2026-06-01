@@ -216,13 +216,14 @@ h1.hh .wi{display:inline-block;opacity:0}
   position:absolute;top:180px;left:48px;right:48px;bottom:40px;
   display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;
   gap:14px;z-index:22;
-  perspective:1000px;
+  perspective:1200px;
+  perspective-origin:50% 50%;
 }
 .dbc{
   border-radius:19.2px;padding:24px;border:1px solid rgba(247,249,250,.07);
   overflow:hidden;position:relative;
-  transform-origin:top center;
-  transform:rotateX(-90deg);
+  transform-origin:left center;
+  transform:rotateY(-90deg);
   opacity:0;
   transition:border-color .3s;
 }
@@ -230,10 +231,10 @@ h1.hh .wi{display:inline-block;opacity:0}
   animation:cardCoinFlip .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 @keyframes cardCoinFlip{
-  0%  {opacity:0;transform:rotateX(-90deg) translateY(-8px)}
-  40% {opacity:1;transform:rotateX(12deg) translateY(3px)}
-  70% {opacity:1;transform:rotateX(-4deg)}
-  100%{opacity:1;transform:rotateX(0deg) translateY(0)}
+  0%  {opacity:0;transform:rotateY(-90deg)}
+  50% {opacity:1;transform:rotateY(10deg)}
+  75% {transform:rotateY(-5deg)}
+  100%{opacity:1;transform:rotateY(0deg)}
 }
 .dbc.grad{background:linear-gradient(135deg,rgba(8,32,16,.9),rgba(14,50,25,.8))}
 .dbc.dark{background:rgba(247,249,250,.025);backdrop-filter:blur(8px)}
@@ -327,64 +328,40 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
 
 <!-- ══ CHATBOT ══════════════════════════════════════════ -->
 <button id="chatbot-btn" onclick="toggleChat()" class="shown">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 96" width="68" height="68">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 86" width="64" height="64" style="display:block">
   <defs>
-    <!-- Piel oscura Hass -->
-    <radialGradient id="sg" cx="38%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#3a6b2e"/>
-      <stop offset="35%" stop-color="#1e4218"/>
-      <stop offset="70%" stop-color="#0f2209"/>
-      <stop offset="100%" stop-color="#060e04"/>
+    <radialGradient id="ak" cx="37%" cy="26%" r="68%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#4a7a3c"/>
+      <stop offset="30%"  stop-color="#243f1d"/>
+      <stop offset="65%"  stop-color="#111f0d"/>
+      <stop offset="100%" stop-color="#060e05"/>
     </radialGradient>
-    <!-- Sombra lateral -->
-    <radialGradient id="sd" cx="78%" cy="60%" r="50%">
-      <stop offset="0%" stop-color="#030803" stop-opacity=".85"/>
-      <stop offset="100%" stop-color="#030803" stop-opacity="0"/>
+    <radialGradient id="adk" cx="72%" cy="62%" r="48%">
+      <stop offset="0%"   stop-color="#040804" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="#040804" stop-opacity="0"/>
     </radialGradient>
-    <!-- Brillo especular -->
-    <radialGradient id="sh" cx="32%" cy="22%" r="26%">
-      <stop offset="0%" stop-color="#8ed67a" stop-opacity=".55"/>
-      <stop offset="100%" stop-color="#8ed67a" stop-opacity="0"/>
+    <radialGradient id="ahk" cx="30%" cy="20%" r="30%">
+      <stop offset="0%"   stop-color="#96e07c" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#96e07c" stop-opacity="0"/>
     </radialGradient>
-    <!-- Glint puntual -->
-    <radialGradient id="sg2" cx="28%" cy="16%" r="9%">
-      <stop offset="0%" stop-color="#d4f5c0" stop-opacity=".7"/>
-      <stop offset="100%" stop-color="#d4f5c0" stop-opacity="0"/>
+    <radialGradient id="agk" cx="26%" cy="15%" r="10%">
+      <stop offset="0%"   stop-color="#e0ffcc" stop-opacity=".75"/>
+      <stop offset="100%" stop-color="#e0ffcc" stop-opacity="0"/>
     </radialGradient>
-    <filter id="shdw">
-      <feDropShadow dx="1" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".5"/>
-    </filter>
-    <!-- Textura sutil de piel -->
-    <filter id="stex" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="1.2 0.9" numOctaves="4" seed="7" result="n"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0 0 .12 0 0 0 0 0 0 0 0 0 0 0 14 -6" in="n" result="m"/>
-      <feComposite in="SourceGraphic" in2="m" operator="multiply"/>
+    <filter id="ashk">
+      <feDropShadow dx="1.5" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".55"/>
     </filter>
   </defs>
-
-  <!-- Cuerpo pera — forma de palta Hass -->
-  <g filter="url(#shdw)">
-    <path d="M40 5 C46 5 54 14 57 28 C61 44 59 64 52 78 C49 83 45 86 40 87 C35 86 31 83 28 78 C21 64 19 44 23 28 C26 14 34 5 40 5Z" fill="url(#sg)"/>
-    <path d="M40 5 C46 5 54 14 57 28 C61 44 59 64 52 78 C49 83 45 86 40 87 C35 86 31 83 28 78 C21 64 19 44 23 28 C26 14 34 5 40 5Z" fill="url(#sg)" filter="url(#stex)" opacity=".6"/>
-    <path d="M40 5 C46 5 54 14 57 28 C61 44 59 64 52 78 C49 83 45 86 40 87 C35 86 31 83 28 78 C21 64 19 44 23 28 C26 14 34 5 40 5Z" fill="url(#sd)"/>
-    <path d="M40 5 C46 5 54 14 57 28 C61 44 59 64 52 78 C49 83 45 86 40 87 C35 86 31 83 28 78 C21 64 19 44 23 28 C26 14 34 5 40 5Z" fill="url(#sh)"/>
-    <path d="M40 5 C46 5 54 14 57 28 C61 44 59 64 52 78 C49 83 45 86 40 87 C35 86 31 83 28 78 C21 64 19 44 23 28 C26 14 34 5 40 5Z" fill="url(#sg2)"/>
+  <g filter="url(#ashk)">
+    <!-- Cuerpo palta pera -->
+    <path d="M36 4 C42 4 51 13 54 27 C58 43 56 62 50 74 C47 79 42 82 36 82 C30 82 25 79 22 74 C16 62 14 43 18 27 C21 13 30 4 36 4Z" fill="url(#ak)"/>
+    <path d="M36 4 C42 4 51 13 54 27 C58 43 56 62 50 74 C47 79 42 82 36 82 C30 82 25 79 22 74 C16 62 14 43 18 27 C21 13 30 4 36 4Z" fill="url(#adk)"/>
+    <path d="M36 4 C42 4 51 13 54 27 C58 43 56 62 50 74 C47 79 42 82 36 82 C30 82 25 79 22 74 C16 62 14 43 18 27 C21 13 30 4 36 4Z" fill="url(#ahk)"/>
+    <path d="M36 4 C42 4 51 13 54 27 C58 43 56 62 50 74 C47 79 42 82 36 82 C30 82 25 79 22 74 C16 62 14 43 18 27 C21 13 30 4 36 4Z" fill="url(#agk)"/>
   </g>
-
-  <!-- Stem marrón -->
-  <path d="M37 6 C36 2 35 0 37 -1 C38.5 -1.5 41.5 -1.5 43 0 C45 1.5 44 4 43 7" fill="#6b3e1e" stroke="#4a2c10" stroke-width=".5"/>
-  <ellipse cx="40" cy="0.5" rx="2" ry="1.2" fill="#9a5e32" opacity=".6"/>
-
-  <!-- Poros / textura superficial visible -->
-  <g opacity=".22" fill="none" stroke="#5faa44" stroke-width=".5">
-    <ellipse cx="30" cy="32" rx="2" ry="1.3" transform="rotate(-12,30,32)"/>
-    <ellipse cx="48" cy="27" rx="1.8" ry="1.2" transform="rotate(8,48,27)"/>
-    <ellipse cx="52" cy="45" rx="2" ry="1.4" transform="rotate(-5,52,45)"/>
-    <ellipse cx="27" cy="52" rx="1.9" ry="1.3" transform="rotate(10,27,52)"/>
-    <ellipse cx="50" cy="62" rx="1.7" ry="1.2"/>
-    <ellipse cx="33" cy="68" rx="2" ry="1.4" transform="rotate(-8,33,68)"/>
-    <ellipse cx="45" cy="74" rx="1.5" ry="1"/>
-  </g>
+  <!-- Stem -->
+  <path d="M33 5 C32 1.5 32 0 34 -0.5 C35.5 -1 38.5 -0.5 40 0.5 C42 2 41 4.5 40 6" fill="#7a4820" stroke="#5a3010" stroke-width=".4"/>
+  <ellipse cx="36" cy="1" rx="2.2" ry="1.3" fill="#a06035" opacity=".55"/>
 </svg>
 </button>
 <div id="avo-badge" class="show">Hablá con un asesor experto</div>
@@ -536,6 +513,28 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
       </g>
     </g>
   </svg>
+
+  <!-- Camión flotante — z-index mayor al curtain, siempre visible -->
+  <div id="truck-float" style="
+    position:absolute;z-index:25;pointer-events:none;
+    top:0;left:0;width:44px;height:26px;
+    transform-origin:center center;
+  ">
+    <svg viewBox="0 0 44 26" fill="none" width="44" height="26">
+      <g id="tf-body">
+        <rect id="tf-c" x="0" y="2" width="28" height="17" rx="3" fill="#555"/>
+        <rect id="tf-b" x="28" y="0" width="16" height="19" rx="3" fill="#555"/>
+        <rect x="34" y="3" width="7" height="9" rx="1.5" fill="#090909" opacity=".85"/>
+        <rect x="35.5" y="4" width="4" height="6" rx="1" fill="#bfdbfe" opacity=".7"/>
+        <rect x="1" y="6" width="18" height="9" rx="1" fill="#090909" opacity=".55"/>
+        <rect x="2" y="7" width="8" height="7" rx="1" fill="#bfdbfe" opacity=".5"/>
+        <circle cx="8" cy="21" r="4" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+        <circle cx="8" cy="21" r="1.5" fill="#555"/>
+        <circle cx="36" cy="21" r="4" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+        <circle cx="36" cy="21" r="1.5" fill="#555"/>
+      </g>
+    </svg>
+  </div>
 
   <!-- Gen 2 curtain -->
   <div id="g2-curtain"></div>
@@ -823,13 +822,29 @@ function setColor(c){
   routeGlow.style.transform=`translate(-50%,-50%) scale(${g.sc})`;
   [tcEl,tbEl].forEach(e=>e.setAttribute('fill',c));
   [w1El,w2El].forEach(e=>e.setAttribute('stroke',c));
+  if(tfC) tfC.setAttribute('fill',c);
+  if(tfB) tfB.setAttribute('fill',c);
   document.querySelectorAll('#tbody circle:nth-of-type(even)').forEach(e=>e.setAttribute('fill',c));
 }
+const truckFloat=document.getElementById('truck-float');
+const tfC=document.getElementById('tf-c');
+const tfB=document.getElementById('tf-b');
+// SVG viewport is 1440×800, container is 100%×100%
 function placeTruck(cp,frac){
   const L=cp.getTotalLength(),d=Math.min(frac,1)*L;
   const pt=cp.getPointAtLength(d),pt2=cp.getPointAtLength(Math.min(d+6,L));
   const angle=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI;
+  // Update SVG truck (background layer, may be behind curtain)
   truck.setAttribute('transform',`translate(${pt.x},${pt.y}) rotate(${angle},0,0) translate(-22,-12)`);
+  // Update floating truck (always on top, z-index:25)
+  const cont=document.getElementById('route-sticky');
+  const sw=cont.offsetWidth||window.innerWidth;
+  const sh=cont.offsetHeight||window.innerHeight;
+  const sx=(pt.x/1440)*sw;
+  const sy=(pt.y/800)*sh;
+  truckFloat.style.left=sx+'px';
+  truckFloat.style.top=sy+'px';
+  truckFloat.style.transform=`translate(-50%,-50%) rotate(${angle}deg)`;
   return pt;
 }
 
@@ -1074,25 +1089,27 @@ dp2.style.strokeDashoffset=L2*(1-g2eC);
   } else if(p<DSE){
     const t=(p-G3E)/(DSE-G3E);
     dcIdx=Math.max(dcIdx,0);
+    gsap.to([g1g,g2g,timeBadge,titleWrap,genTags,genBadge,genEra],{opacity:0,duration:.5});
 
     if(t < 0.22){
-      // Fase cinematic: SVG truck hace wiggle+giro en el SVG antes del corte
-      // Sin overlay todavía — el camión sigue en la ruta del Gen3
-      const pt = placeTruck(cp3, 1.0); // truck fijo al final del gen3
-      const wigX = t < 0.08 ? -(t/0.08)*18 : -18+(((t-0.08)/0.14)*18);
+      // FASE CINEMATIC: floating truck hace wiggle+giro sin corte de pantalla
+      const pt = placeTruck(cp3, 1.0);
+      const wigX = t < 0.08 ? -(t/0.08)*28 : -28+(((t-0.08)/0.14)*28);
       const wigRot = t < 0.08 ? 0 : ((t-0.08)/0.14)*90;
-      truck.setAttribute('transform',
-        `translate(${pt.x + wigX}, ${pt.y}) rotate(${wigRot},0,0) translate(-22,-12)`);
-      gsap.to([g1g,g2g,timeBadge,titleWrap,genTags,genBadge,genEra],{opacity:0,duration:.6});
-      // descentOverlay empieza a fundirse pero desde posición del SVG truck
-      if(t > 0.14) {
-        gsap.to(descentOverlay,{opacity: (t-0.14)/0.08, duration:.01});
-      }
+      const cont=document.getElementById('route-sticky');
+      const sw=cont.offsetWidth||window.innerWidth;
+      const sh=cont.offsetHeight||window.innerHeight;
+      const sx=(pt.x/1440)*sw + wigX;
+      const sy=(pt.y/800)*sh;
+      truckFloat.style.left=sx+'px';
+      truckFloat.style.top=sy+'px';
+      truckFloat.style.transform=`translate(-50%,-50%) rotate(${wigRot}deg)`;
+      truckFloat.style.opacity='1';
+      if(t > 0.12) gsap.to(descentOverlay,{opacity:Math.min((t-0.12)/0.10,1),duration:.01});
     } else {
+      truckFloat.style.opacity='0';
       updateDescent(t);
-    }
-
-  } else {
+    }} else {
     const t=(p-DSE)/(1-DSE);
     placeTruck(cp3,1.0);
     updateWarehouse(t);
