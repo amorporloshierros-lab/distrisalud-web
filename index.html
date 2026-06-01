@@ -40,19 +40,39 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* ══ CHATBOT — HOJA ANIMADA ══════════════════════════════ */
 #chatbot-btn{
-  position:fixed;bottom:32px;right:32px;z-index:300;
-  width:56px;height:56px;background:var(--accent);border-radius:50%;
+  position:fixed;bottom:36px;right:36px;z-index:300;
+  width:64px;height:64px;background:transparent;border-radius:0;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;border:none;
-  box-shadow:0 4px 20px rgba(34,197,94,.4);
-  animation:leafFloat 3s ease-in-out infinite;
+  cursor:pointer;border:none;padding:0;
+  filter:drop-shadow(0 6px 18px rgba(34,197,94,.45));
+  animation:avoBounce 3.5s ease-in-out infinite;
   transition:transform .2s;
   opacity:0;
 }
-#chatbot-btn:hover{transform:scale(1.1) translateY(-2px)}
-@keyframes leafFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
-.leaf-icon{font-size:26px;animation:leafSpin 4s ease-in-out infinite}
-@keyframes leafSpin{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+#chatbot-btn:hover{transform:scale(1.12)}
+@keyframes avoBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.avo-icon{font-size:52px;line-height:1;display:block;user-select:none}
+/* Badge emergente */
+#avo-badge{
+  position:fixed;bottom:112px;right:20px;z-index:299;
+  background:var(--accent);color:#090909;
+  font-family:var(--fm);font-size:10px;font-weight:700;letter-spacing:.05em;
+  padding:8px 14px;border-radius:8px;white-space:nowrap;
+  opacity:0;transform:translateY(6px) scale(.95);
+  pointer-events:none;
+  transition:opacity .4s ease, transform .4s ease;
+  box-shadow:0 4px 16px rgba(34,197,94,.35);
+}
+#avo-badge::after{
+  content:'';position:absolute;bottom:-6px;right:24px;
+  width:0;height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:6px solid var(--accent);
+}
+#chatbot-btn.shown + #avo-badge, #avo-badge.show{
+  opacity:1;transform:translateY(0) scale(1);
+}
 
 #chatbot-panel{
   position:fixed;bottom:100px;right:32px;z-index:299;
@@ -268,12 +288,13 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
 </div>
 
 <!-- ══ CHATBOT ══════════════════════════════════════════ -->
-<button id="chatbot-btn" onclick="toggleChat()">
-  <span class="leaf-icon">🌿</span>
+<button id="chatbot-btn" onclick="toggleChat()" class="shown">
+  <span class="avo-icon">🥑</span>
 </button>
+<div id="avo-badge" class="show">Hablá con un asesor experto</div>
 <div id="chatbot-panel">
   <div class="chat-header">
-    <div class="chat-av">🌿</div>
+    <div class="chat-av" style="font-size:22px;background:transparent;border:none">🥑</div>
     <div>
       <div class="chat-name">DistriSalud</div>
       <div class="chat-status"><span class="chat-dot"></span>En línea</div>
@@ -303,7 +324,7 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
   <div class="hero-tag"><span class="ht-dot"></span>Distribuidora mayorista · Argentina</div>
   <h1 class="hh">
     <span class="line">
-      <span class="wi">DistriSalud</span>
+      <span class="wi"><em>DistriSalud</em></span>
     </span>
     <span class="line">
       <span class="wi">donde damos</span>
@@ -313,9 +334,9 @@ hr.div{border:none;border-top:1px solid rgba(247,249,250,.06);margin:0}
     </span>
   </h1>
   <div class="hero-subs">
-    <p class="hero-sub">Somos una distribuidora de alimentos orgánicos, suplementos dietarios y deportivos.</p>
-    <p class="hero-sub">Llevamos alimentos naturales a restaurantes, comercios, dietéticas y negocios.</p>
-    <p class="hero-sub">Del campo a tu mano, con un solo click.</p>
+    <p class="hero-sub">Somos una distribuidora de <em style="font-style:normal;color:var(--accent)">alimentos orgánicos</em>, suplementos dietarios y deportivos.</p>
+    <p class="hero-sub">Llevamos productos naturales a restaurantes, comercios, dietéticas y negocios.</p>
+    <p class="hero-sub"><em style="font-style:normal;color:var(--accent)">Del campo a tu mano</em>, con un solo click.</p>
   </div>
   <div class="hero-cta-line">
     <a href="#" class="btn-pill" style="padding:12px 28px">Quiero ser mayorista</a>
@@ -586,22 +607,18 @@ function showSite(){
   // Headline — palabras caen una a una con efecto suave
   gsap.fromTo('h1.hh .wi',
     {yPercent:110, opacity:0},
-    {yPercent:0, opacity:1, duration:1, stagger:.12, ease:'power4.out', delay:.3});
-  // Subtexts
+    {yPercent:0, opacity:1, duration:.75, stagger:.09, ease:'power4.out', delay:.1});
   gsap.fromTo('.hero-sub',
-    {opacity:0, y:14},
-    {opacity:1, y:0, duration:.7, stagger:.15, ease:'power3.out', delay:.85});
-  // CTA
-  gsap.fromTo('.hero-cta-line',
     {opacity:0, y:10},
-    {opacity:1, y:0, duration:.6, ease:'power3.out', delay:1.3});
-  // Métricas
+    {opacity:1, y:0, duration:.55, stagger:.12, ease:'power3.out', delay:.55});
+  gsap.fromTo('.hero-cta-line',
+    {opacity:0, y:8},
+    {opacity:1, y:0, duration:.5, ease:'power3.out', delay:.95});
   gsap.fromTo('.hero-cards',
-    {opacity:0, y:16},
-    {opacity:1, y:0, duration:.7, ease:'power3.out', delay:1.5});
-  // Chatbot
-  gsap.to('#chatbot-btn',{opacity:1,duration:.5,delay:1.8});
-  setTimeout(()=>ScrollTrigger.refresh(), 2000);
+    {opacity:0, y:12},
+    {opacity:1, y:0, duration:.55, ease:'power3.out', delay:1.1});
+  gsap.to('#chatbot-btn',{opacity:1,duration:.5,delay:1.4});
+  setTimeout(()=>ScrollTrigger.refresh(), 1600);
 }
 
 /* ══ CHATBOT ══════════════════════════════════════════════ */
@@ -609,6 +626,9 @@ let chatOpen=false;
 function toggleChat(){
   chatOpen=!chatOpen;
   document.getElementById('chatbot-panel').classList.toggle('open',chatOpen);
+  // ocultar badge al interactuar
+  const badge=document.getElementById('avo-badge');
+  if(badge) badge.classList.remove('show');
 }
 const responses=['¡Claro! Para ser mayorista podés escribirnos a ventas@distrisalud.ar 🌿','Tenemos más de 500 productos disponibles: proteínas, naturistas, suplementos deportivos y alimentos orgánicos.','Las entregas en AMBA y GBA son en 24hs. ¿Querés que te contactemos?','No manejamos mínimos de compra. Podés pedir desde 1 unidad. 🚐'];
 let rIdx=0;
@@ -720,8 +740,8 @@ function switchGen(g){
     setColor('#555');
     gsap.set([g2g,g3g,g2curtain,descentOverlay,whScene],{opacity:0});
     gsap.to(g1g,{opacity:1,duration:.5});
-    genBadge.textContent='GEN_1 |||||||||||||||||||||||';
-    genEra.textContent='Hace 20 años · Aún vigente hoy';
+    genBadge.textContent='ANTES ||| El canal con intermediarios';
+    genEra.textContent='❌ Modelo tradicional — sin trazabilidad, sin garantía';
     titleWrap.innerHTML='<span class="cw" id="cw0">El</span><span class="cw" id="cw1">vendedor</span><span class="cw" id="cw2">con</span><span class="cw" id="cw3">el</span><span class="cw" id="cw4">muestrario.</span>';
     genTags.innerHTML='<span class="g-tag bad" id="gt0">CATÁLOGO IMPRESO</span><span class="g-tag bad" id="gt1">SIN TRACKING</span><span class="g-tag bad" id="gt2">2-4 SEMANAS</span><span class="g-tag bad" id="gt3">SIN GARANTÍA</span>';
     timeBadge.className='bad';timeBadge.textContent='⏱ 2 A 4 SEMANAS';
@@ -734,8 +754,8 @@ function switchGen(g){
     gsap.to(g2g,{opacity:1,duration:.01});
     gsap.set(g2curtain,{opacity:1,'clip-path':'inset(0 100% 0 0)'});
     gsap.set([g3g,descentOverlay,whScene],{opacity:0});
-    genBadge.textContent='GEN_2 |||||||||||||||||||||||';
-    genEra.textContent='Hace 10 años · El modelo mayoritario actual';
+    genBadge.textContent='HOY ||| La gran distribuidora intermediaria';
+    genEra.textContent='⚠️ Gran distribuidora — burocrática, mínimos altos, 48-72hs';
     titleWrap.innerHTML='<span class="cw" id="cw20">La gran</span><br><span class="cw" id="cw21">distribuidora.</span><br><span class="cw" style="color:var(--accent)" id="cw22">Burocrática.</span>';
     genTags.innerHTML='<span class="g-tag mid" id="gt0">SISTEMA ONLINE</span><span class="g-tag bad" id="gt1">MÍNIMO $500K</span><span class="g-tag bad" id="gt2">48-72HS</span><span class="g-tag bad" id="gt3">PRECIOS INFLADOS</span>';
     timeBadge.className='mid';timeBadge.textContent='⏱ 48 A 72 HORAS';
@@ -750,8 +770,8 @@ function switchGen(g){
     gsap.to(g3g,{opacity:1,duration:.01});
     gsap.set([descentOverlay,whScene],{opacity:0});
     dcIdx=0; // reset card index al entrar gen3
-    genBadge.textContent='GEN_3 ||| DISTRISALUD';
-    genEra.textContent='Hoy · El modelo que faltaba';
+    genBadge.textContent='✅ DISTRISALUD ||| Directo · Rápido · Sin intermediarios';
+    genEra.textContent='✅ DistriSalud — directo de depósito a tu local en 24hs';
     titleWrap.innerHTML='<span class="cw" id="cw30">El stock</span><br><span class="cw" id="cw31">está en</span><br><span class="cw" style="color:var(--accent)" id="cw32">tu local.</span>';
     genTags.innerHTML='<span class="g-tag good" id="gt0">ENTREGA 24HS</span><span class="g-tag good" id="gt1">SIN MÍNIMO</span><span class="g-tag good" id="gt2">+500 PRODUCTOS</span><span class="g-tag good" id="gt3">PRECIO REAL</span>';
     timeBadge.className='good';timeBadge.textContent='⚡ 24 HORAS — DIRECTO';
@@ -818,7 +838,7 @@ function updateDescent(t){
 
   // Rotación del truck: empieza horizontal (apuntando derecha = 90°)
   // y se endereza a vertical (90° → 0°) durante el giro inicial
-  const truckRot = t < 0.12 ? 90 - (t/0.12)*90 : 0;
+  const truckRot = t < 0.12 ? (t/0.12)*90 : 90; // 0°(derecha)→90°(abajo)
   descTruck.style.transform = `translate(-50%, -50%) rotate(${truckRot}deg)`;
 
   // Coin-flip en tarjetas — se disparan cuando el truck las "pasa"
